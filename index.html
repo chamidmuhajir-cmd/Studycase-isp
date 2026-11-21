@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studi Kasus Manajemen Konflik | Pelatihan Soft Skill ISP Nasional</title>
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --ink: #1c2430;
+    --muted: #5b6675;
+    --line: #dde3ea;
+    --brand: #0f4c81;
+    --brand-soft: #e7f0f8;
+    --ok: #1d7a46;
+    --ok-soft: #e6f4ec;
+    --err: #b3261e;
+    --err-soft: #fbeaea;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    font-size: 16px;
+  }
+  header {
+    background: var(--brand);
+    color: #fff;
+    padding: 20px 16px;
+  }
+  header .wrap { max-width: 720px; margin: 0 auto; }
+  header p { margin: 0; opacity: .85; font-size: 14px; }
+  header h1 { margin: 4px 0 0; font-size: 22px; line-height: 1.3; }
+  main { max-width: 720px; margin: 0 auto; padding: 16px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  h2 { font-size: 18px; margin: 0 0 12px; }
+  ol, ul { padding-left: 20px; margin: 8px 0; }
+  label { display: block; font-weight: 600; margin: 14px 0 6px; font-size: 15px; }
+  input, textarea {
+    width: 100%;
+    font: inherit;
+    padding: 12px;
+    border: 1px solid #c4ccd6;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+  }
+  input:focus, textarea:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
+  textarea { min-height: 180px; resize: vertical; }
+  .hint { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  button {
+    font: inherit;
+    font-weight: 600;
+    background: var(--brand);
+    color: #fff;
+    border: 0;
+    border-radius: 8px;
+    padding: 13px 20px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 18px;
+  }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .msg { border-radius: 8px; padding: 12px 14px; margin-top: 14px; font-size: 15px; }
+  .msg.err { background: var(--err-soft); color: var(--err); }
+  .msg.ok { background: var(--ok-soft); color: var(--ok); }
+  .msg.info { background: var(--brand-soft); color: var(--brand); }
+  .tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--brand);
+    background: var(--brand-soft);
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  .kasus { margin: 6px 0 12px; }
+  .tanya { font-weight: 600; margin: 0 0 4px; }
+  .counter { font-size: 13px; color: var(--muted); text-align: right; margin-top: 4px; }
+  .counter.kurang { color: var(--err); }
+  .who { font-size: 14px; color: var(--muted); margin: 0 0 4px; }
+  .hidden { display: none; }
+  footer { text-align: center; font-size: 13px; color: var(--muted); padding: 8px 16px 32px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <p>Pelatihan Soft Skill Pengurus ISP Nasional</p>
+    <h1>Studi Kasus Manajemen Konflik</h1>
+  </div>
+</header>
+
+<main>
+  <!-- Langkah 1: data diri -->
+  <section id="step-data" class="card">
+    <h2>Isi data diri dulu</h2>
+    <p>Setiap peserta akan mendapat <strong>3 studi kasus</strong> yang dipilih acak, jadi soalmu bisa berbeda dengan teman. Untuk setiap kasus, jawabanmu sebaiknya membahas:</p>
+    <ol>
+      <li>Apa penyebab konfliknya</li>
+      <li>Gaya penanganan konflik apa yang terlihat di kasus itu</li>
+      <li>Solusi konkret yang kamu tawarkan, sesuai pertanyaan di tiap kasus</li>
+    </ol>
+    <p class="hint">Setiap nomor WhatsApp hanya bisa mengirim jawaban satu kali.</p>
+
+    <form id="form-data" novalidate>
+      <label for="nama">Nama lengkap</label>
+      <input id="nama" name="nama" autocomplete="name" maxlength="100" required>
+
+      <label for="regional">Regional / departemen</label>
+      <input id="regional" name="regional" maxlength="100" placeholder="Contoh: Regional Bandung, Departemen Media" required>
+
+      <label for="wa">Nomor WhatsApp</label>
+      <input id="wa" name="wa" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="08xxxxxxxxxx" required>
+
+      <button type="submit" id="btn-mulai">Mulai kerjakan</button>
+      <div id="msg-data" class="msg hidden" role="alert"></div>
+    </form>
+  </section>
+
+  <!-- Langkah 2: soal -->
+  <section id="step-soal" class="hidden">
+    <div class="card">
+      <p class="who" id="who"></p>
+      <p style="margin:0">Jawabanmu tersimpan otomatis di perangkat ini selama belum dikirim. Minimal <strong id="min-label"></strong> karakter per jawaban.</p>
+    </div>
+    <form id="form-soal" novalidate>
+      <div id="daftar-soal"></div>
+      <div class="card">
+        <button type="submit" id="btn-kirim" style="margin-top:0">Kirim jawaban</button>
+        <div id="msg-soal" class="msg hidden" role="alert"></div>
+      </div>
+    </form>
+  </section>
+
+  <!-- Langkah 3: selesai -->
+  <section id="step-selesai" class="card hidden">
+    <h2>Jawabanmu sudah terkirim</h2>
+    <p>Terima kasih sudah mengerjakan. Hasil penilaian akan diumumkan oleh Tim HRD ISP Nasional sebelum sesi berikutnya.</p>
+  </section>
+</main>
+
+<footer>Tim HRD ISP Nasional</footer>
+
+<script>
+/* ============ PENGATURAN ============
+   Ganti SCRIPT_URL dengan URL Web App dari Google Apps Script
+   (berakhiran /exec). Lihat PANDUAN.md langkah 2. */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxpOgUujkLVUgVVNBJ-FzApEzFvX-MBRcjFdcig-KEtEf_9Dt-zU_S3SQYMZ9p_w_lzQ/exec";
+const MIN_KARAKTER = 150;
+const JUMLAH_SOAL = 3;
+/* ==================================== */
+
+const BANK_SOAL = [
+ {
+  "id": 1,
+  "judul": "Konten yang Selalu Telat",
+  "kasus": "Konten edukasi mingguan di departemen media telat dua kali berturut-turut. Rina, koordinator konten, menegur Dimas, desainer, di grup besar pengurus. Dimas merasa dipermalukan dan membalas bahwa brief dari Rina selalu dikirim mepet. Anggota lain diam, dan satu pengurus keluar dari grup.",
+  "pertanyaan": "Kalau kamu ketua departemen media, apa yang kamu lakukan dalam 24 jam pertama setelah kejadian ini?"
+ },
+ {
+  "id": 2,
+  "judul": "Rebutan Tanggal Webinar",
+  "kasus": "Regional Bandung dan Regional Semarang sama-sama sudah menghubungi pemateri yang sama untuk webinar di tanggal yang sama. Pemateri hanya bisa satu. Kedua ketua regional saling klaim lebih dulu menghubungi, dan perdebatannya mulai terbawa ke grup nasional.",
+  "pertanyaan": "Bagaimana seharusnya konflik ini diselesaikan, dan siapa yang sebaiknya menengahi?"
+ },
+ {
+  "id": 3,
+  "judul": "Dana Konsumsi Belum Cair",
+  "kasus": "H-1 acara offline, dana konsumsi dari bendahara belum cair. Fajar, koordinator konsumsi, akhirnya menalangi pakai uang pribadi. Di grup panitia ia menulis bahwa bendahara tidak becus. Sinta, bendahara, menjawab bahwa pengajuan dana dari Fajar baru masuk dua hari sebelumnya tanpa rincian.",
+  "pertanyaan": "Apa yang salah dari cara kedua pihak berkomunikasi, dan apa solusi supaya kejadian ini tidak terulang?"
+ },
+ {
+  "id": 4,
+  "judul": "Anggota Baru yang Diabaikan",
+  "kasus": "Nadia baru bergabung di departemen edukasi. Tiga kali ia mengusulkan ide konten di rapat, tapi tidak pernah ditanggapi. Pengurus senior langsung pindah ke topik lain. Sekarang Nadia jarang hadir rapat dan hanya membaca pesan grup tanpa membalas.",
+  "pertanyaan": "Apa jenis konflik yang terjadi di sini, dan langkah apa yang bisa diambil kepala departemen?"
+ },
+ {
+  "id": 5,
+  "judul": "Sponsor yang Bikin Ragu",
+  "kasus": "Sebuah aplikasi trading menawarkan sponsor untuk acara besar komunitas. Bagas ingin langsung menerima karena dananya besar. Laras menolak karena aplikasi itu dikenal sering memakai promosi yang menjanjikan untung cepat, dan ia khawatir citra komunitas edukasi jadi rusak. Rapat buntu dua kali.",
+  "pertanyaan": "Gaya penanganan konflik apa yang paling cocok di kasus ini, dan seperti apa jalan tengah yang realistis?"
+ },
+ {
+  "id": 6,
+  "judul": "Keputusan Sepihak Ketua",
+  "kasus": "Sehari sebelum publikasi, ketua regional mengganti tema acara tanpa diskusi karena mendapat masukan dari kenalannya. Tim media harus merombak semua desain dalam semalam. Beberapa pengurus mulai membicarakan ketua di grup lain yang tidak ada ketuanya.",
+  "pertanyaan": "Bagaimana cara pengurus menyampaikan keberatan ke ketua tanpa memperburuk suasana?"
+ },
+ {
+  "id": 7,
+  "judul": "Pengurus yang Sering Menghilang",
+  "kasus": "Yoga bekerja dengan sistem shift sehingga sering membalas pesan grup 10 sampai 12 jam kemudian. Anggota tim lain menganggapnya tidak berkomitmen dan mulai tidak memberinya tugas penting. Yoga merasa dikucilkan padahal tugasnya selalu selesai.",
+  "pertanyaan": "Apa sumber konflik di sini, dan bagaimana tim bisa menyesuaikan cara kerjanya?"
+ },
+ {
+  "id": 8,
+  "judul": "Debat Saham di Grup Member",
+  "kasus": "Diskusi tentang satu saham di grup member berubah jadi saling ejek antara dua kubu. Admin menghapus beberapa pesan dari satu kubu karena dianggap kasar. Kubu itu lalu menuduh admin berpihak dan mengancam membuat grup tandingan.",
+  "pertanyaan": "Sebagai admin, bagaimana kamu meredakan situasi dan menjaga kepercayaan member?"
+ },
+ {
+  "id": 9,
+  "judul": "Pemateri Lewat Waktu",
+  "kasus": "Saat webinar, pemateri bicara 20 menit melebihi jatah sehingga sesi tanya jawab terancam hilang. Moderator memotong di tengah penjelasan pemateri. Setelah acara, pemateri mengirim pesan ke ketua bahwa ia merasa tidak dihargai dan enggan diundang lagi.",
+  "pertanyaan": "Bagaimana seharusnya moderator dan panitia menangani situasi ini, baik saat acara maupun setelahnya?"
+ },
+ {
+  "id": 10,
+  "judul": "Infografis Salah Data",
+  "kasus": "Infografis tentang dividen yang sudah diunggah ternyata memuat angka yang salah dan ramai dikoreksi member di kolom komentar. Departemen edukasi bilang media salah menyalin data. Departemen media bilang naskah dari edukasi memang sudah salah. Tidak ada yang mau merevisi.",
+  "pertanyaan": "Apa langkah penyelesaian yang adil untuk kedua departemen, dan apa yang perlu diperbaiki di alur kerjanya?"
+ },
+ {
+  "id": 11,
+  "judul": "Apresiasi yang Tidak Merata",
+  "kasus": "Setelah acara sukses, unggahan ucapan terima kasih di Instagram hanya menyebut ketua panitia dan pemateri. Puluhan panitia lain merasa kerja kerasnya tidak dilihat. Beberapa orang menyatakan tidak mau ikut kepanitiaan berikutnya.",
+  "pertanyaan": "Bagaimana cara memulihkan semangat panitia yang kecewa?"
+ },
+ {
+  "id": 12,
+  "judul": "Rapat yang Didominasi Dua Orang",
+  "kasus": "Di setiap rapat online, Andra dan Putri selalu bicara paling banyak dan keputusan hampir selalu mengikuti pendapat mereka. Pengurus lain lebih banyak diam dengan kamera mati. Belakangan muncul keluhan bahwa keputusan rapat tidak mewakili tim.",
+  "pertanyaan": "Kalau kamu pemimpin rapat, apa yang akan kamu ubah dari cara rapat dijalankan?"
+ },
+ {
+  "id": 13,
+  "judul": "Notulen yang Tidak Dibaca",
+  "kasus": "Mega, sekretaris, selalu membagikan notulen rapat. Minggu ini seorang pengurus memprotes keputusan pembagian tugas, padahal keputusan itu sudah tercatat jelas di notulen. Mega membalas dengan nada kesal bahwa tidak ada yang pernah membaca notulennya.",
+  "pertanyaan": "Apa inti masalahnya, dan bagaimana cara menyelesaikannya tanpa ada yang merasa disalahkan?"
+ },
+ {
+  "id": 14,
+  "judul": "Desain Dipakai Tanpa Izin",
+  "kasus": "Regional A menemukan desain konten buatan mereka diunggah ulang oleh Regional B dengan sedikit perubahan dan tanpa mencantumkan kredit. Tim media Regional A protes di grup nasional. Regional B menjawab bahwa semua aset komunitas adalah milik bersama.",
+  "pertanyaan": "Bagaimana pengurus nasional sebaiknya menengahi, dan aturan apa yang perlu dibuat?"
+ },
+ {
+  "id": 15,
+  "judul": "Akun Zoom Bentrok",
+  "kasus": "Dua departemen memakai akun Zoom komunitas di jam yang sama karena tidak ada jadwal pemakaian. Salah satu acara terpaksa batal di menit terakhir dan peserta kecewa. Kedua koordinator saling menyalahkan soal siapa yang lebih dulu memesan.",
+  "pertanyaan": "Apa penyebab sebenarnya dari konflik ini, dan apa solusi jangka pendek dan jangka panjangnya?"
+ },
+ {
+  "id": 16,
+  "judul": "Senior yang Menolak Cara Baru",
+  "kasus": "Tim memutuskan memakai spreadsheet bersama untuk memantau progres tugas. Pak Hendra, pengurus paling senior, menolak memakainya dan tetap melapor lewat chat pribadi ke ketua. Anggota muda merasa aturan hanya berlaku untuk mereka.",
+  "pertanyaan": "Bagaimana cara mengajak anggota senior beradaptasi tanpa membuatnya merasa tidak dihormati?"
+ },
+ {
+  "id": 17,
+  "judul": "Masalah Pribadi Terbawa ke Tim",
+  "kasus": "Dua pengurus di departemen yang sama dulu bersahabat, lalu berselisih karena urusan pribadi di luar organisasi. Sekarang mereka menolak satu tim dalam proyek apa pun, dan anggota lain jadi serba salah setiap kali pembagian tugas.",
+  "pertanyaan": "Sejauh mana pengurus boleh ikut campur, dan apa yang bisa dilakukan supaya kerja tim tetap jalan?"
+ },
+ {
+  "id": 18,
+  "judul": "Komplain Dianggap Jualan",
+  "kasus": "Seorang member berkomentar di Instagram bahwa materi edukasi komunitas terasa seperti promosi sekuritas tertentu. Tim PR ingin langsung membalas dan membela diri. Pengurus lain ingin menghapus komentarnya saja. Perdebatan internal makin panas sementara komentar terus dibalas member lain.",
+  "pertanyaan": "Bagaimana tim sebaiknya menyepakati respon, dan seperti apa respon yang tepat ke member?"
+ },
+ {
+  "id": 19,
+  "judul": "Vendor Batal Mendadak",
+  "kasus": "Tiga hari sebelum acara offline, vendor tempat membatalkan sewa. Di rapat darurat, ketua panitia menyalahkan koordinator logistik di depan semua orang karena tidak membuat perjanjian tertulis. Koordinator logistik langsung keluar dari rapat.",
+  "pertanyaan": "Apa yang sebaiknya dilakukan ketua panitia saat itu, dan bagaimana memperbaiki hubungan setelahnya?"
+ },
+ {
+  "id": 20,
+  "judul": "Kandidat Titipan Ketua",
+  "kasus": "Tim HRD menolak calon pengurus yang direkomendasikan ketua regional karena nilainya di bawah standar seleksi. Ketua regional merasa tidak dihargai dan meminta keputusan dibatalkan. HRD bersikeras proses seleksi harus sama untuk semua orang.",
+  "pertanyaan": "Bagaimana menyelesaikan konflik ini dengan tetap menjaga keadilan proses seleksi?"
+ },
+ {
+  "id": 21,
+  "judul": "Satu Orang Mengerjakan Semuanya",
+  "kasus": "Hampir semua desain konten dikerjakan oleh Tari karena anggota lain dianggap belum mahir. Setelah tiga bulan, Tari meledak di grup dan bilang ia capek jadi satu-satunya yang bekerja. Anggota lain tersinggung karena merasa sudah membantu di bagian lain.",
+  "pertanyaan": "Apa akar masalahnya, dan bagaimana pembagian kerja yang lebih sehat?"
+ },
+ {
+  "id": 22,
+  "judul": "Pesan Singkat yang Disalahartikan",
+  "kasus": "Koordinator membalas laporan anggota hanya dengan \"ok.\" Anggota itu mengira koordinator marah dan tidak puas, lalu berhenti melapor. Koordinator justru heran kenapa anggotanya tiba-tiba diam. Dua minggu mereka tidak saling menghubungi.",
+  "pertanyaan": "Bagaimana salah paham seperti ini bisa terjadi, dan siapa yang sebaiknya memulai perbaikan?"
+ },
+ {
+  "id": 23,
+  "judul": "Kalah Voting, Mogok Bantu",
+  "kasus": "Voting tema acara tahunan dimenangkan pilihan A dengan selisih tipis. Kelompok yang memilih tema B merasa votingnya terburu-buru, lalu menolak ikut persiapan acara. Persiapan jadi kekurangan orang.",
+  "pertanyaan": "Bagaimana cara merangkul kelompok yang kalah tanpa mengulang voting?"
+ },
+ {
+  "id": 24,
+  "judul": "Target dari Pusat",
+  "kasus": "Pengurus nasional menetapkan target 300 peserta untuk setiap acara regional. Beberapa regional kecil merasa target itu tidak realistis dan tidak pernah diajak diskusi. Mereka mulai menganggap pengurus nasional tidak paham kondisi di daerah.",
+  "pertanyaan": "Bagaimana pengurus nasional dan regional sebaiknya membicarakan target ini?"
+ }
+];
+
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+
+function normWa(wa) {
+  let d = String(wa || "").replace(/\D/g, "");
+  if (d.startsWith("62")) d = "0" + d.slice(2);
+  if (d.startsWith("8")) d = "0" + d;
+  return d;
+}
+
+function show(el, text, type) {
+  el.textContent = text;
+  el.className = "msg " + type;
+}
+function hide(el) { el.className = "msg hidden"; }
+
+function acakSoal() {
+  const ids = BANK_SOAL.map(s => s.id);
+  for (let i = ids.length - 1; i > 0; i--) {
+    const r = new Uint32Array(1);
+    crypto.getRandomValues(r);
+    const j = r[0] % (i + 1);
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+  return ids.slice(0, JUMLAH_SOAL);
+}
+
+async function fetchJson(url, options, timeoutMs) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs || 20000);
+  try {
+    const res = await fetch(url, Object.assign({}, options, { signal: ctrl.signal }));
+    return await res.json();
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+let peserta = null;   // {nama, regional, wa}
+let soalIds = [];
+
+$("min-label").textContent = MIN_KARAKTER;
+
+if (!SCRIPT_URL) {
+  show($("msg-data"), "App ini belum disambungkan ke Google Sheets. Panitia perlu mengisi SCRIPT_URL dulu.", "err");
+  $("btn-mulai").disabled = true;
+}
+
+// Lanjutkan sesi yang belum dikirim
+const aktif = store.get("sk_aktif");
+if (aktif && aktif.peserta && Array.isArray(aktif.soalIds)) {
+  const sesi = store.get("sk_" + aktif.peserta.wa);
+  if (sesi && !sesi.terkirim) {
+    peserta = aktif.peserta;
+    soalIds = aktif.soalIds;
+    tampilkanSoal();
+  }
+}
+
+$("form-data").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msg = $("msg-data");
+  hide(msg);
+  const nama = $("nama").value.trim();
+  const regional = $("regional").value.trim();
+  const wa = normWa($("wa").value);
+
+  if (nama.length < 3) return show(msg, "Nama lengkap wajib diisi.", "err");
+  if (regional.length < 2) return show(msg, "Regional atau departemen wajib diisi.", "err");
+  if (!/^08\d{7,12}$/.test(wa)) return show(msg, "Nomor WhatsApp belum valid. Contoh: 081234567890", "err");
+
+  const btn = $("btn-mulai");
+  btn.disabled = true;
+  btn.textContent = "Mengecek...";
+  try {
+    const r = await fetchJson(SCRIPT_URL + "?action=check&wa=" + encodeURIComponent(wa), { method: "GET" });
+    if (!r.ok) throw new Error(r.error || "Gagal mengecek nomor.");
+    if (r.closed) { show(msg, "Pengumpulan jawaban sudah ditutup.", "err"); return; }
+    if (r.exists) { show(msg, "Nomor WhatsApp ini sudah pernah mengirim jawaban.", "err"); return; }
+  } catch (err) {
+    show(msg, "Koneksi bermasalah, coba lagi sebentar lagi. (" + (err.message || "error") + ")", "err");
+    return;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Mulai kerjakan";
+  }
+
+  peserta = { nama, regional, wa };
+  const lama = store.get("sk_" + wa);
+  soalIds = (lama && Array.isArray(lama.soalIds)) ? lama.soalIds : acakSoal();
+  store.set("sk_" + wa, Object.assign({ soalIds, jawaban: {} }, lama || {}, { soalIds }));
+  store.set("sk_aktif", { peserta, soalIds });
+  tampilkanSoal();
+});
+
+function tampilkanSoal() {
+  $("step-data").classList.add("hidden");
+  $("step-soal").classList.remove("hidden");
+  $("who").textContent = peserta.nama + " · " + peserta.regional + " · " + peserta.wa;
+
+  const sesi = store.get("sk_" + peserta.wa) || { jawaban: {} };
+  const wadah = $("daftar-soal");
+  wadah.textContent = "";
+
+  soalIds.forEach((id, i) => {
+    const s = BANK_SOAL.find(x => x.id === id);
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = "Kasus " + (i + 1) + " dari " + soalIds.length;
+
+    const h = document.createElement("h2");
+    h.textContent = s.judul;
+
+    const kasus = document.createElement("p");
+    kasus.className = "kasus";
+    kasus.textContent = s.kasus;
+
+    const tanya = document.createElement("p");
+    tanya.className = "tanya";
+    tanya.textContent = s.pertanyaan;
+
+    const ta = document.createElement("textarea");
+    ta.id = "jawab-" + id;
+    ta.maxLength = 4000;
+    ta.setAttribute("aria-label", "Jawaban kasus " + (i + 1));
+    ta.placeholder = "Tulis analisismu: penyebab konflik, gaya penanganan yang terlihat, dan solusi yang kamu tawarkan.";
+    ta.value = (sesi.jawaban && sesi.jawaban[id]) || "";
+
+    const counter = document.createElement("div");
+    counter.className = "counter";
+    const update = () => {
+      const n = ta.value.trim().length;
+      counter.textContent = n + " karakter" + (n < MIN_KARAKTER ? " (minimal " + MIN_KARAKTER + ")" : "");
+      counter.classList.toggle("kurang", n < MIN_KARAKTER);
+    };
+    ta.addEventListener("input", () => {
+      update();
+      const cur = store.get("sk_" + peserta.wa) || { soalIds, jawaban: {} };
+      cur.jawaban = cur.jawaban || {};
+      cur.jawaban[id] = ta.value;
+      store.set("sk_" + peserta.wa, cur);
+    });
+    update();
+
+    card.append(tag, h, kasus, tanya, ta, counter);
+    wadah.appendChild(card);
+  });
+  window.scrollTo(0, 0);
+}
+
+$("form-soal").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msg = $("msg-soal");
+  hide(msg);
+
+  const jawaban = soalIds.map(id => ({ id, jawaban: $("jawab-" + id).value.trim() }));
+  const kurang = jawaban.findIndex(j => j.jawaban.length < MIN_KARAKTER);
+  if (kurang !== -1) {
+    show(msg, "Jawaban kasus " + (kurang + 1) + " masih kurang dari " + MIN_KARAKTER + " karakter.", "err");
+    $("jawab-" + jawaban[kurang].id).focus();
+    return;
+  }
+  if (!confirmKirim()) return;
+
+  const btn = $("btn-kirim");
+  btn.disabled = true;
+  btn.textContent = "Mengirim...";
+  try {
+    // Content-Type text/plain supaya tidak butuh preflight CORS ke Apps Script
+    const r = await fetchJson(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(Object.assign({}, peserta, { jawaban }))
+    }, 30000);
+    if (r.ok || r.duplicate) {
+      const cur = store.get("sk_" + peserta.wa) || {};
+      cur.terkirim = true;
+      store.set("sk_" + peserta.wa, cur);
+      store.del("sk_aktif");
+      $("step-soal").classList.add("hidden");
+      $("step-selesai").classList.remove("hidden");
+      if (r.duplicate) {
+        $("step-selesai").querySelector("p").textContent = "Nomor WhatsApp ini sudah tercatat mengirim jawaban sebelumnya, jadi jawaban baru tidak disimpan.";
+      }
+      window.scrollTo(0, 0);
+    } else {
+      show(msg, r.error || "Gagal mengirim. Coba lagi.", "err");
+    }
+  } catch (err) {
+    show(msg, "Koneksi bermasalah, jawabanmu masih tersimpan di perangkat ini. Coba kirim lagi.", "err");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Kirim jawaban";
+  }
+});
+
+let sudahKonfirmasi = false;
+function confirmKirim() {
+  if (sudahKonfirmasi) return true;
+  sudahKonfirmasi = true;
+  show($("msg-soal"), "Jawaban tidak bisa diubah setelah dikirim. Tekan \"Kirim jawaban\" sekali lagi untuk mengirim.", "info");
+  return false;
+}
+</script>
+</body>
+</html>
